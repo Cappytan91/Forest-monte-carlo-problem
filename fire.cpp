@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include <ctime>
-#include "rang.hpp"
+#include "termcolor.hpp"
 //#include <windows.h>
 
 #define NUMR 10
@@ -28,20 +28,20 @@ void printLand(land area[NUMR][NUMC]){                      //prints the array i
         for(int j = 0; j < NUMC; j++){
             if(area[i][j].trees == 0){
                 //SetConsoleTextAttribute(hConsole, 8);  // white
-                cout << rang::fg::black << setw(4) << area[i][j].trees;
+                cout << termcolor::grey<< setw(4) << area[i][j].trees;
             }else if(area[i][j].onFire){
                 //SetConsoleTextAttribute(hConsole, 12);  // red
-                cout << rang::fg::red << setw(4) << area[i][j].trees;
+                cout << termcolor::red << setw(4) << area[i][j].trees;
             }else{
                 //SetConsoleTextAttribute(hConsole, 10);  // green
-                cout << rang::fg::green << setw(4) << area[i][j].trees;
+                cout << termcolor::green << setw(4) << area[i][j].trees;
             }
             
         }
         cout << "\n";
     }
     //SetConsoleTextAttribute(hConsole, 15);  // white
-    cout << rang::fg::reset << "\n";
+    cout << termcolor::reset << "\n";
 
 }
 
