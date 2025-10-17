@@ -2,7 +2,8 @@
 #include <cstdlib>
 #include <iomanip>
 #include <ctime>
-#include <windows.h>
+#include "rang.hpp"
+//#include <windows.h>
 
 #define NUMR 10
 #define NUMC 10
@@ -20,27 +21,27 @@ class land{
 };
 
 void printLand(land area[NUMR][NUMC]){                      //prints the array in ✨color✨
-    HANDLE  hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, 10);  // green
+    //HANDLE  hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    //SetConsoleTextAttribute(hConsole, 10);  // green
 
     for(int i = 0; i < NUMR; i++){
         for(int j = 0; j < NUMC; j++){
             if(area[i][j].trees == 0){
-                SetConsoleTextAttribute(hConsole, 8);  // white
-                cout << setw(4) << area[i][j].trees;
+                //SetConsoleTextAttribute(hConsole, 8);  // white
+                cout << rang::fg::black << setw(4) << area[i][j].trees;
             }else if(area[i][j].onFire){
-                SetConsoleTextAttribute(hConsole, 12);  // red
-                cout << setw(4) << area[i][j].trees;
+                //SetConsoleTextAttribute(hConsole, 12);  // red
+                cout << rang::fg::red << setw(4) << area[i][j].trees;
             }else{
-                SetConsoleTextAttribute(hConsole, 10);  // green
-                cout << setw(4) << area[i][j].trees;
+                //SetConsoleTextAttribute(hConsole, 10);  // green
+                cout << rang::fg::green << setw(4) << area[i][j].trees;
             }
             
         }
         cout << "\n";
     }
-    SetConsoleTextAttribute(hConsole, 15);  // white
-    cout << "\n";
+    //SetConsoleTextAttribute(hConsole, 15);  // white
+    cout << rang::fg::reset << "\n";
 
 }
 
