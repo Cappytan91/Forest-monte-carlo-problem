@@ -60,6 +60,10 @@ void updateTrees(land gen1[NUMR][NUMC], land gen2[NUMR][NUMC], int row, int col)
 
         int chance = 5;         // temp for the moment, just used to get a random number
 
+        if (DROUGHT == true){
+            chance--;
+        }
+
         //  fire spreading logic below
 
         //  is not out of bounds && is not 0 && is not on fire && (chance to spread)
