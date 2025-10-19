@@ -123,7 +123,7 @@ int main() {
     for(int gen = 2; gen < GENS + 1; gen++){    // generation loop
         if (rand() % 5 == 0)                    // drought occurs 1 out of every 5 generations
         {
-            DROUGHT == true;
+            DROUGHT = true;
         }
         for(int i = 0; i < NUMR; i++){              // row loop
             for(int j = 0; j < NUMC; j++){              // column loop
