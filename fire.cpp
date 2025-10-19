@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include <ctime>
+#include <math.h>
 #include "termcolor.hpp"
 
 #define NUMR 10
@@ -10,6 +11,12 @@
 #define GENS 25
 
 bool DROUGHT = false;
+
+bool WIND = false; //turns wind on or off
+
+int WIND_SPEED; // Wind speed in mph
+
+//char WIND_DIRECTION; //assuming wind speed is 10 mph -- can change 
 
 using namespace std;
 
@@ -35,7 +42,12 @@ void printLand(land area[NUMR][NUMC]){                      //prints the array i
         }
         cout << "\n";
     }
+
     cout << termcolor::reset << "\n";
+
+    if (WIND == true){ 
+            cout << "Wind Speed: " << WIND_SPEED << " mph" << "\n \n";         // Know how fast wind is so we can observe differences in fire spread
+    }
 
 }
 
@@ -60,9 +72,20 @@ void updateTrees(land gen1[NUMR][NUMC], land gen2[NUMR][NUMC], int row, int col)
 
         int chance = 5;         // temp for the moment, just used to get a random number
 
-        if (DROUGHT == true){
+        
+        if (DROUGHT == true){   // increases fire spread rate by 5% to 25% chance of spread rate
             chance--;
         }
+
+        if (WIND == true){
+            chance = chance - (WIND_SPEED * 0.1);  // increase the chance of fire spread rate by 5%, 8.33%, 13.33%, 25%, or 30%
+            round(chance);  // chance is either rounded up or down to nearest whole number depending on if it is >= .5 or < .5 
+
+            if (chance == 1){ // prevents 100% chance of fire spread rate
+                chance = 2; 
+            }             
+        }
+
 
         //  fire spreading logic below
 
@@ -123,11 +146,20 @@ int main() {
     printLand(area);
     cpyArr(gen2, area);
 
+    int mph;
 
-    for(int gen = 2; gen < GENS + 1; gen++){    // generation loop
-        if (rand() % 5 == 0)                    // drought occurs 1 out of every 5 generations
+    for(int gen = 2; gen < GENS + 1; gen++){    // generation loop     
+        WIND = false;
+        DROUGHT = false;
+        if (rand() % 5 == 0)                    // drought occurs 1 out of every 5 generations roughly
         {
             DROUGHT = true;
+        }
+        if (rand() % 2 == 0)                    // wind occurs 1 out of every 2 generations roughly
+        {
+            WIND = true;
+            mph = (rand() % 30) + 1;            // wind speed can be from 1 - 30 mph
+            WIND_SPEED = mph;
         }
         for(int i = 0; i < NUMR; i++){              // row loop
             for(int j = 0; j < NUMC; j++){              // column loop
@@ -138,8 +170,9 @@ int main() {
         cpyArr(area, gen2);
         cout << "Generation " << gen << ":\n";
         printLand(area);
+        
     }
 
-    cout << "Hello World!";
+    //cout << "Hello World!";
     return 0;
 }
