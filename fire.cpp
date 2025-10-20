@@ -86,16 +86,6 @@ void updateTrees(Land gen1[NUMR][NUMC], Land gen2[NUMR][NUMC], int row, int col)
             chance--;
         }
 
-        // if (isWindy){
-        //     chance = chance - (WIND_SPEED * 0.1);  // increase the chance of fire spread rate by 5%, 8.33%, 13.33%, 25%, or 30%
-        //     round(chance);  // chance is either rounded up or down to nearest whole number depending on if it is >= .5 or < .5 
-
-        //     if (chance == 1){ // prevents 100% chance of fire spread rate
-        //         chance = 2; 
-        //     }             
-        // }
-
-
         //  fire spreading logic below
 
         //  is not out of bounds && is not 0 && is not on fire && (chance to spread)
@@ -124,6 +114,9 @@ void updateTrees(Land gen1[NUMR][NUMC], Land gen2[NUMR][NUMC], int row, int col)
 
             gen2[row][col+1] = tmp;
         }
+
+        if(rand() % 50 == 0)
+            gen2[row][col].onFire = false;
         
     }else if(gen1[row][col].trees == 0){    // if no trees, then no fire
         tmp = gen1[row][col];
