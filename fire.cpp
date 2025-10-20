@@ -148,7 +148,7 @@ int main() {
 
     srand(time(0));             // set seed after filling array to have the same forest, but different results
 
-    area[4][4].onFire = true;           // set a starting point for fire
+    area[6][4].onFire = true;           // set a starting point for fire
                                         //this will be changed at some point and a fire will start randomly
 
     cout << "Generation " << 1 << ":\n";
