@@ -5,29 +5,38 @@
 #include <math.h>
 #include "termcolor.hpp"
 
-#define NUMR 10
-#define NUMC 10
+#define NUMR 20
+#define NUMC 20
 
 #define GENS 25
 
-bool DROUGHT = false;
 
-bool WIND = false; //turns wind on or off
+class Wind{
+    public:
+        int x = 0;
+        int y = 0;
+};
 
-int WIND_SPEED; // Wind speed in mph
-
-//char WIND_DIRECTION; //assuming wind speed is 10 mph -- can change 
-
-using namespace std;
-
-class land{
+class Land{
     public:
         int trees = 0;
         bool onFire = false;
 
 };
 
-void printLand(land area[NUMR][NUMC]){                      //prints the array in ✨color✨
+
+bool DROUGHT = false;
+
+bool isWindy = false; //turns wind on or off
+
+Wind wind = Wind(); // this is the global wind variable 
+//  (it is a vector so it has a direction and magnitude [speed])
+
+using namespace std;
+
+
+
+void printLand(Land area[NUMR][NUMC]){                      //prints the array in ✨color✨
 
     for(int i = 0; i < NUMR; i++){
         for(int j = 0; j < NUMC; j++){
@@ -45,13 +54,13 @@ void printLand(land area[NUMR][NUMC]){                      //prints the array i
 
     cout << termcolor::reset << "\n";
 
-    if (WIND == true){ 
-            cout << "Wind Speed: " << WIND_SPEED << " mph" << "\n \n";         // Know how fast wind is so we can observe differences in fire spread
+    if (isWindy){ 
+            cout << "Wind Speed: x: " << wind.x << "    y: " << wind.y << " mph" << "\n \n";         // Know how fast wind is so we can observe differences in fire spread
     }
 
 }
 
-void cpyArr(land gen1[NUMR][NUMC], land gen2[NUMR][NUMC]){         // copies from the 2nd array
+void cpyArr(Land gen1[NUMR][NUMC], Land gen2[NUMR][NUMC]){         // copies from the 2nd array
     for(int i = 0; i < NUMR; i++){                                 // into the first one
         for(int j = 0; j < NUMC; j++){
             gen1[i][j] = gen2[i][j];
@@ -60,9 +69,9 @@ void cpyArr(land gen1[NUMR][NUMC], land gen2[NUMR][NUMC]){         // copies fro
 
 }
 
-void updateTrees(land gen1[NUMR][NUMC], land gen2[NUMR][NUMC], int row, int col){       // similar to the checker function in our previous program
+void updateTrees(Land gen1[NUMR][NUMC], Land gen2[NUMR][NUMC], int row, int col){       // similar to the checker function in our previous program
                                                                                         // this one gets both arrays, rol and col, and runs a bunch
-    land tmp;    // used to copy the classes into each other without changing stuff     // of checks on the data. afterwards copies it into the 2nd array
+    Land tmp;    // used to copy the classes into each other without changing stuff     // of checks on the data. afterwards copies it into the 2nd array
 
     if(gen1[row][col].onFire && gen1[row][col].trees > 0){  // if on fire and more than 0 trees
         tmp = gen1[row][col];
@@ -77,39 +86,39 @@ void updateTrees(land gen1[NUMR][NUMC], land gen2[NUMR][NUMC], int row, int col)
             chance--;
         }
 
-        if (WIND == true){
-            chance = chance - (WIND_SPEED * 0.1);  // increase the chance of fire spread rate by 5%, 8.33%, 13.33%, 25%, or 30%
-            round(chance);  // chance is either rounded up or down to nearest whole number depending on if it is >= .5 or < .5 
+        // if (isWindy){
+        //     chance = chance - (WIND_SPEED * 0.1);  // increase the chance of fire spread rate by 5%, 8.33%, 13.33%, 25%, or 30%
+        //     round(chance);  // chance is either rounded up or down to nearest whole number depending on if it is >= .5 or < .5 
 
-            if (chance == 1){ // prevents 100% chance of fire spread rate
-                chance = 2; 
-            }             
-        }
+        //     if (chance == 1){ // prevents 100% chance of fire spread rate
+        //         chance = 2; 
+        //     }             
+        // }
 
 
         //  fire spreading logic below
 
         //  is not out of bounds && is not 0 && is not on fire && (chance to spread)
-        if(row - 1 >= 0 && gen1[row-1][col].trees > 0 && !gen1[row-1][col].onFire && rand() % chance == 0){
+        if(row - 1 >= 0 && gen1[row-1][col].trees > 0 && !gen1[row-1][col].onFire && rand() % (chance - wind.y) == 0){
             tmp = gen1[row-1][col];
             tmp.onFire = true;
 
             gen2[row-1][col] = tmp;
         }
-        if(row + 1 < NUMR && gen1[row+1][col].trees > 0 && !gen1[row+1][col].onFire && rand() % chance == 0){
+        if(row + 1 < NUMR && gen1[row+1][col].trees > 0 && !gen1[row+1][col].onFire && rand() % (chance + wind.y) == 0){
             tmp = gen1[row+1][col];
             tmp.onFire = true;
 
             gen2[row+1][col] = tmp;
         }
 
-        if(col - 1 >= 0 && gen1[row][col-1].trees > 0 && !gen1[row][col-1].onFire && rand() % chance == 0){
+        if(col - 1 >= 0 && gen1[row][col-1].trees > 0 && !gen1[row][col-1].onFire && rand() % (chance + wind.x) == 0){
             tmp = gen1[row][col-1];
             tmp.onFire = true;
 
             gen2[row][col-1] = tmp;
         }
-        if(col + 1 < NUMC && gen1[row][col+1].trees > 0 && !gen1[row][col+1].onFire && rand() % chance == 0){
+        if(col + 1 < NUMC && gen1[row][col+1].trees > 0 && !gen1[row][col+1].onFire && rand() % (chance - wind.x) == 0){
             tmp = gen1[row][col+1];
             tmp.onFire = true;
 
@@ -126,12 +135,12 @@ void updateTrees(land gen1[NUMR][NUMC], land gen2[NUMR][NUMC], int row, int col)
 
 int main() {
 
-    land area[NUMR][NUMC];
-    land gen2[NUMR][NUMC];
+    Land area[NUMR][NUMC];
+    Land gen2[NUMR][NUMC];
 
     for(int i = 0; i < NUMR; i++){          // fill array with data
         for(int j = 0; j < NUMC; j++){
-            area[i][j] = land();
+            area[i][j] = Land();
             area[i][j].trees = rand() % 12;
             
         }
@@ -149,7 +158,7 @@ int main() {
     int mph;
 
     for(int gen = 2; gen < GENS + 1; gen++){    // generation loop     
-        WIND = false;
+        isWindy = true;
         DROUGHT = false;
         if (rand() % 5 == 0)                    // drought occurs 1 out of every 5 generations roughly
         {
@@ -157,9 +166,17 @@ int main() {
         }
         if (rand() % 2 == 0)                    // wind occurs 1 out of every 2 generations roughly
         {
-            WIND = true;
-            mph = (rand() % 30) + 1;            // wind speed can be from 1 - 30 mph
-            WIND_SPEED = mph;
+            int direction = -1; // 50/50 chance to make the direction negative
+            if(rand() % 2)
+                direction = 1;        
+
+            if(rand() % 2){      // 50/50 chance to affect x or y of the wind vector
+                wind.x = direction * (rand() % 4);
+                wind.y = 0;
+            }else{
+                wind.x = 0;
+                wind.y = direction * (rand() % 4);
+            }
         }
         for(int i = 0; i < NUMR; i++){              // row loop
             for(int j = 0; j < NUMC; j++){              // column loop
