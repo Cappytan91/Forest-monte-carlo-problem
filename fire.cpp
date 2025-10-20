@@ -8,7 +8,7 @@
 #define NUMR 20
 #define NUMC 20
 
-#define GENS 25
+#define GENS 50
 
 
 class Wind{
@@ -133,6 +133,20 @@ void updateTrees(Land gen1[NUMR][NUMC], Land gen2[NUMR][NUMC], int row, int col)
 
 }
 
+int getPercentDestruction(Land area[NUMR][NUMC]){
+    int total = 0;
+
+    for(int i = 0; i < NUMR; i++){          // fill array with data
+        for(int j = 0; j < NUMC; j++){
+            if(area[i][j].onFire || area[i][j].trees == 0)
+                total++;
+        }
+    }
+    total *= 100;
+    return total / (NUMR * NUMC);
+
+}
+
 int main() {
 
     Land area[NUMR][NUMC];
@@ -190,6 +204,6 @@ int main() {
         
     }
 
-    //cout << "Hello World!";
+    cout << "percent destruction: " << getPercentDestruction(area) << "%\n";
     return 0;
 }
