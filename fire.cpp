@@ -8,7 +8,8 @@
 #define NUMR 20
 #define NUMC 20
 
-#define GENS 50
+#define TRIALS 2000
+#define GENS 75
 
 
 class Wind{
@@ -142,8 +143,12 @@ int getPercentDestruction(Land area[NUMR][NUMC]){
 
 int main() {
 
+    Land startArray[NUMR][NUMC];
+
     Land area[NUMR][NUMC];
     Land gen2[NUMR][NUMC];
+
+    int destructionAverage = 0;
 
     for(int i = 0; i < NUMR; i++){          // fill array with data
         for(int j = 0; j < NUMC; j++){
@@ -158,45 +163,54 @@ int main() {
     area[6][4].onFire = true;           // set a starting point for fire
                                         //this will be changed at some point and a fire will start randomly
 
-    cout << "Generation " << 1 << ":\n";
+    cout << "Start:\n";
     printLand(area);
     cpyArr(gen2, area);
+    cpyArr(startArray, area);
 
-    int mph;
+    for(int trial = 0; trial < TRIALS; trial++){
+        cout << "Trial " << trial << ":\n";
+        cpyArr(area, startArray);
+        cpyArr(gen2, startArray);
 
-    for(int gen = 2; gen < GENS + 1; gen++){    // generation loop     
-        isWindy = true;
-        DROUGHT = false;
-        if (rand() % 5 == 0)                    // drought occurs 1 out of every 5 generations roughly
-        {
-            DROUGHT = true;
-        }
-        if (rand() % 2 == 0)                    // wind occurs 1 out of every 2 generations roughly
-        {
-            int direction = -1; // 50/50 chance to make the direction negative
-            if(rand() % 2)
-                direction = 1;        
-
-            if(rand() % 2){      // 50/50 chance to affect x or y of the wind vector
-                wind.x = direction * (rand() % 4);
-                wind.y = 0;
-            }else{
-                wind.x = 0;
-                wind.y = direction * (rand() % 4);
+     for(int gen = 2; gen < GENS + 1; gen++){    // generation loop     
+            isWindy = true;
+            DROUGHT = false;
+            if (rand() % 5 == 0)                    // drought occurs 1 out of every 5 generations roughly
+            {
+                DROUGHT = true;
             }
-        }
-        for(int i = 0; i < NUMR; i++){              // row loop
-            for(int j = 0; j < NUMC; j++){              // column loop
-                updateTrees(area, gen2, i, j);              // update the selected trees
-                
+            if (rand() % 2 == 0)                    // wind occurs 1 out of every 2 generations roughly
+            {
+                int direction = -1; // 50/50 chance to make the direction negative
+                if(rand() % 2)
+                    direction = 1;        
+
+                if(rand() % 2){      // 50/50 chance to affect x or y of the wind vector
+                    wind.x = direction * (rand() % 4);
+                    wind.y = 0;
+                }else{
+                    wind.x = 0;
+                    wind.y = direction * (rand() % 4);
+                }
             }
+            for(int i = 0; i < NUMR; i++){              // row loop
+                for(int j = 0; j < NUMC; j++){              // column loop
+                    updateTrees(area, gen2, i, j);              // update the selected trees
+                    
+                }
+            }
+            cpyArr(area, gen2);
+//            cout << "Generation " << gen << ":\n";
+//            printLand(area);
+            
         }
-        cpyArr(area, gen2);
-        cout << "Generation " << gen << ":\n";
-        printLand(area);
-        
+//        printLand(area);
+        cout << "percent destruction: " << getPercentDestruction(area) << "%\n";
+        destructionAverage += getPercentDestruction(area);
     }
 
-    cout << "percent destruction: " << getPercentDestruction(area) << "%\n";
+    destructionAverage /= TRIALS;
+    cout << "\naverage destruction: " << destructionAverage << "%\n";
     return 0;
 }
