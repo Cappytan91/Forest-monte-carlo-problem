@@ -168,12 +168,12 @@ int main() {
     cpyArr(gen2, area);
     cpyArr(startArray, area);
 
-    for(int trial = 0; trial < TRIALS; trial++){
+    for(int trial = 0; trial < TRIALS; trial++){    // trial loop
         cout << "Trial " << trial << ":\n";
-        cpyArr(area, startArray);
-        cpyArr(gen2, startArray);
+        cpyArr(area, startArray);                   // copy starting array into both arrays to run the trial
+        cpyArr(gen2, startArray);                   // with the same array every single time
 
-     for(int gen = 2; gen < GENS + 1; gen++){    // generation loop     
+        for(int gen = 2; gen < GENS + 1; gen++){    // generation loop     
             isWindy = true;
             DROUGHT = false;
             if (rand() % 5 == 0)                    // drought occurs 1 out of every 5 generations roughly
@@ -206,11 +206,11 @@ int main() {
             
         }
 //        printLand(area);
-        cout << "percent destruction: " << getPercentDestruction(area) << "%\n";
-        destructionAverage += getPercentDestruction(area);
+        cout << "percent destruction: " << getPercentDestruction(area) << "%\n";    // print % destruction
+        destructionAverage += getPercentDestruction(area);    // add % destruction to get average destruction
     }
 
     destructionAverage /= TRIALS;
-    cout << "\naverage destruction: " << destructionAverage << "%\n";
+    cout << "\naverage destruction: " << destructionAverage << "%\n";      // calculate and print average destruction
     return 0;
 }
