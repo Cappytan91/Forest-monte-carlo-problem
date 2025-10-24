@@ -8,7 +8,7 @@
 #define NUMR 20
 #define NUMC 20
 
-#define TRIALS 2000
+#define TRIALS 20000
 #define GENS 75
 
 
@@ -34,8 +34,6 @@ Wind wind = Wind(); // this is the global wind variable
 //  (it is a vector so it has a direction and magnitude [speed])
 
 using namespace std;
-
-
 
 void printLand(Land area[NUMR][NUMC]){                      //prints the array in ✨color✨
 
@@ -130,7 +128,7 @@ void updateTrees(Land gen1[NUMR][NUMC], Land gen2[NUMR][NUMC], int row, int col)
 int getPercentDestruction(Land area[NUMR][NUMC]){
     int total = 0;
 
-    for(int i = 0; i < NUMR; i++){          // fill array with data
+    for(int i = 0; i < NUMR; i++){          
         for(int j = 0; j < NUMC; j++){
             if(area[i][j].onFire || area[i][j].trees == 0)
                 total++;
@@ -168,8 +166,9 @@ int main() {
     cpyArr(gen2, area);
     cpyArr(startArray, area);
 
+    #pragma omp parallel for private(area, gen2) num_threads(4)
     for(int trial = 0; trial < TRIALS; trial++){    // trial loop
-        cout << "Trial " << trial << ":\n";
+//        cout << "Trial " << trial << ":\n";
         cpyArr(area, startArray);                   // copy starting array into both arrays to run the trial
         cpyArr(gen2, startArray);                   // with the same array every single time
 
@@ -196,18 +195,31 @@ int main() {
             }
             for(int i = 0; i < NUMR; i++){              // row loop
                 for(int j = 0; j < NUMC; j++){              // column loop
-                    updateTrees(area, gen2, i, j);              // update the selected trees
-                    
+                    if(gen % 2 == 0)
+                        updateTrees(area, gen2, i, j);              // update the selected trees
+                    else
+                        updateTrees(gen2, area, i, j);
                 }
             }
-            cpyArr(area, gen2);
+            //cpyArr(area, gen2);
 //            cout << "Generation " << gen << ":\n";
 //            printLand(area);
             
         }
 //        printLand(area);
-        cout << "percent destruction: " << getPercentDestruction(area) << "%\n";    // print % destruction
-        destructionAverage += getPercentDestruction(area);    // add % destruction to get average destruction
+        //cout << "percent destruction: " << getPercentDestruction(area) << "%\n";    // print % destruction
+        // if(getPercentDestruction(area) < getPercentDestruction(gen2))
+        //     cout << trial << "true\n";
+        #pragma omp critical
+            destructionAverage += getPercentDestruction(area);
+            // if(getPercentDestruction(area) >= getPercentDestruction(gen2)){
+            //     destructionAverage += getPercentDestruction(area);
+            // }else{
+            //     destructionAverage += getPercentDestruction(gen2);
+            // }
+        
+        //if(gen % 2 == 0)
+          //  destructionAverage += getPercentDestruction(area);    // add % destruction to get average destruction
     }
 
     destructionAverage /= TRIALS;
