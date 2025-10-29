@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <iomanip>
 #include <ctime>
@@ -8,7 +9,7 @@
 #define NUMR 20
 #define NUMC 20
 
-#define TRIALS 2000
+#define TRIALS 20
 #define GENS 75
 
 
@@ -147,6 +148,7 @@ int main() {
 
     Land area[NUMR][NUMC];
     Land gen2[NUMR][NUMC];
+    int destructionPerGen[TRIALS][GENS];
 
     int destructionAverage = 0;
 
@@ -173,7 +175,9 @@ int main() {
         cpyArr(area, startArray);                   // copy starting array into both arrays to run the trial
         cpyArr(gen2, startArray);                   // with the same array every single time
 
-        for(int gen = 2; gen < GENS + 1; gen++){    // generation loop     
+        for(int gen = 2; gen < GENS + 1; gen++){    // generation loop    
+            destructionPerGen[trial][gen-2] = getPercentDestruction(area);
+
             isWindy = true;
             DROUGHT = false;
             if (rand() % 5 == 0)                    // drought occurs 1 out of every 5 generations roughly
@@ -203,8 +207,10 @@ int main() {
             cpyArr(area, gen2);
 //            cout << "Generation " << gen << ":\n";
 //            printLand(area);
-            
+
         }
+        destructionPerGen[trial][74] = getPercentDestruction(area);
+
 //        printLand(area);
         cout << "percent destruction: " << getPercentDestruction(area) << "%\n";    // print % destruction
         destructionAverage += getPercentDestruction(area);    // add % destruction to get average destruction
@@ -212,5 +218,49 @@ int main() {
 
     destructionAverage /= TRIALS;
     cout << "\naverage destruction: " << destructionAverage << "%\n";      // calculate and print average destruction
+    
+    ofstream dump("data.dump");
+
+    for(int i = 0; i < GENS; i++){
+        dump << "Gen " << i + 1 << ":\n";
+        for(int j = 0; j < TRIALS; j++){
+            dump << destructionPerGen[j][i] << " ";
+        }
+        dump << "\n";
+    }
+
+    dump << "[";
+    for(int i = 0; i < GENS; i++){
+        
+        for(int j = 0; j < TRIALS; j++){
+            dump << i << ", ";
+        }
+        
+    }
+    dump << "]\n";
+
+    dump << "[";
+    for(int i = 0; i < GENS; i++){
+        
+        for(int j = 0; j < TRIALS; j++){
+            dump << destructionPerGen[j][i] << ", ";
+        }
+    }
+    dump << "]\n";
+
+    dump << "[";
+    for(int i = 0; i < GENS; i++){
+        int tmp = 0;
+        
+        for(int j = 0; j < TRIALS; j++){
+            tmp += destructionPerGen[j][i];
+        }
+        dump << tmp/TRIALS << ", ";
+    }
+    dump << "]\n";
+
+    // Close the file
+    dump.close();
+
     return 0;
 }
